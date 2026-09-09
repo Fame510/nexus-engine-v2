@@ -9,6 +9,7 @@ Nexus Engine v2 is an industrial browser-intelligence runtime built from the ori
 - **Extraction:** CSS selector extraction with text and numeric transforms, content hashing, HTML and screenshot artifacts, and metadata capture.
 - **Security:** Bearer API keys, SSRF protection through DNS resolution, private-network blocking, protocol validation, action caps, disabled arbitrary script execution, payload limits, navigation limits, and screenshot limits.
 - **Operations:** Structured JSON logs, health endpoint, Prometheus metrics, graceful worker shutdown, separate API and worker containers, read-only API container, and persistent volumes.
+- **SaaS layer:** Install-first public landing page, plans endpoint, tenant API keys, monthly usage quotas, account usage, hosted upgrade checkout, and Stripe webhook verification.
 
 ## Run locally
 
@@ -49,6 +50,10 @@ docker compose up --build
 | GET | `/metrics` | Prometheus metrics |
 
 Every API endpoint except `/health` and `/metrics` requires `Authorization: Bearer <API key>`.
+
+The public landing page is served at `/`, API docs at `/docs`, and plan metadata at `/v1/plans`. The configured `API_KEYS` act as owner keys. Owner keys can mint tenant API keys through `POST /v1/account/api-keys`; generated keys are stored only as SHA-256 hashes. Configure `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and the three `STRIPE_PRICE_*` values to enable `POST /v1/billing/checkout`.
+
+For a developer-first signup flow, send `POST /v1/signup` with `{ "email": "you@example.com" }`. The response returns a Community API key once; store it immediately and use it as a bearer token for job submission. This is the open-core wedge: users can download and self-host the engine immediately, then upgrade to hosted Starter or Growth capacity without changing the API contract.
 
 ## Industrial production requirements before public multi-tenant launch
 

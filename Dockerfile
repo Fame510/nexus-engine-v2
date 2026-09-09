@@ -6,6 +6,7 @@ COPY package*.json ./
 RUN npm install --omit=dev && npx playwright install chromium
 COPY src ./src
 COPY scripts ./scripts
+COPY public ./public
 COPY README.md ./README.md
 RUN mkdir -p /data/artifacts && chown -R node:node /app /data
 USER node
