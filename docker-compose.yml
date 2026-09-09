@@ -1,0 +1,33 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: ["redis_data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  api:
+    build: .
+    command: ["node", "src/server.js"]
+    env_file: .env
+    ports: ["3000:3000"]
+    volumes: ["artifacts:/data/artifacts"]
+    depends_on:
+      redis: {condition: service_healthy}
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+  worker:
+    build: .
+    command: ["xvfb-run", "-a", "--server-args=-screen 0 1920x1080x24", "node", "src/worker.js"]
+    env_file: .env
+    volumes: ["artifacts:/data/artifacts"]
+    depends_on:
+      redis: {condition: service_healthy}
+    shm_size: 1gb
+    security_opt: ["no-new-privileges:true"]
+volumes:
+  redis_data:
+  artifacts:

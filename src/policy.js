@@ -1,0 +1,7 @@
+const dns = require('node:dns').promises;
+const net = require('node:net');
+const config = require('./config');
+function privateIp(ip){ if(ip.startsWith('::ffff:')) return privateIp(ip.slice(7)); if(net.isIP(ip)===6) return ip==='::1'||ip.startsWith('fc')||ip.startsWith('fd')||ip.startsWith('fe80:'); return /^(0\.|10\.|127\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(ip); }
+async function validateTarget(raw){ let url; try{url=new URL(raw);}catch{throw new Error('Invalid URL');} if(!['http:','https:'].includes(url.protocol)) throw new Error('Only HTTP and HTTPS targets are allowed'); if(!config.ALLOW_PRIVATE_TARGETS){ if(privateIp(url.hostname)) throw new Error('Private network targets are blocked'); const addresses=await dns.lookup(url.hostname,{all:true}); if(addresses.some(a=>privateIp(a.address))) throw new Error('Private network targets are blocked'); } return url; }
+function validateActions(actions=[]){ if(!Array.isArray(actions)||actions.length>50) throw new Error('Too many actions'); return actions.map(a=>{ if(!a||typeof a.type!=='string') throw new Error('Invalid action'); if(['evaluate','executeScript','setCookie'].includes(a.type)) throw new Error(`Action ${a.type} is disabled by policy`); if(a.type==='waitForSelector' && (typeof a.selector!=='string'||a.selector.length>500)) throw new Error('Invalid selector'); return a; }); }
+module.exports={validateTarget,validateActions};

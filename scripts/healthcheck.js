@@ -1,0 +1,1 @@
+const base=process.env.NEXUS_URL||'http://localhost:3000'; fetch(`${base}/health`).then(async r=>{const body=await r.text();if(!r.ok)throw new Error(`${r.status} ${body}`);console.log(body);}).catch(err=>{console.error(err.message);process.exit(1);});
