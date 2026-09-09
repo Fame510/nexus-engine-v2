@@ -1,5 +1,9 @@
 # Nexus Engine v2
 
+**Created and authored solely by Dante Bullock (@Fame510).**
+
+Nexus Engine is browser intelligence that ships: an open-core execution runtime with a hosted SaaS path for teams that need rendered web data to become structured, auditable, repeatable evidence. This README distinguishes implemented controls from roadmap claims.
+
 Nexus Engine v2 is an industrial browser-intelligence runtime built from the original Nexus Scraper vision. It provides a durable Redis-backed job plane, a unified Playwright/Puppeteer execution interface, headed and headless browser modes, bounded extraction, artifacts, replayable job state, WebSocket-ready events, Prometheus metrics, and explicit security policy enforcement.
 
 ## What is implemented

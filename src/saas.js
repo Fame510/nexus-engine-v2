@@ -8,4 +8,6 @@ async function resolveApiKey(raw){const data=await redis.hgetall(`nexus:apikey:$
 function period(){return new Date().toISOString().slice(0,7);}
 async function usage(accountId){return Number(await redis.get(`nexus:usage:${accountId}:${period()}`)||0);}
 async function consume(accountId,plan){const limit=plans[plan]?.monthlyJobs??plans.free.monthlyJobs;const key=`nexus:usage:${accountId}:${period()}`;const count=await redis.incr(key);await redis.expire(key,60*60*24*45);if(count>limit){await redis.decr(key);const error=new Error(`Monthly job limit reached for ${plans[plan]?.name||'Community'} plan`);error.statusCode=429;throw error;}return {used:count,limit};}
-module.exports={plans,createAccount,createApiKey,resolveApiKey,usage,consume};
+async function releaseUsage(accountId){const key=`nexus:usage:${accountId}:${period()}`;const count=await redis.decr(key);if(count<0) await redis.set(key,0);}
+async function checkRateLimit(accountId,plan){const limits={free:30,starter:120,growth:600,pro:1800};const key=`nexus:rate:${accountId}:${Math.floor(Date.now()/60000)}`;const count=await redis.incr(key);await redis.expire(key,120);const limit=limits[plan]||limits.free;if(count>limit){const error=new Error('Request rate limit exceeded');error.statusCode=429;throw error;}return {remaining:Math.max(0,limit-count),limit};}
+module.exports={plans,createAccount,createApiKey,resolveApiKey,usage,consume,releaseUsage,checkRateLimit};
