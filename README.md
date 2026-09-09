@@ -4,6 +4,8 @@
 
 Nexus Engine is browser intelligence that ships: an open-core execution runtime with a hosted SaaS path for teams that need rendered web data to become structured, auditable, repeatable evidence. This README distinguishes implemented controls from roadmap claims.
 
+**ARIA is the founder operating system around Nexus.** The `/aria` workspace reads the authenticated account, live Nexus jobs, usage, activity, capabilities, and saved founder briefs. Browser execution is real; workspace categories marked `workspace` are durable organization surfaces, while `integration` means a provider must be connected before the product claims that execution exists.
+
 Nexus Engine v2 is an industrial browser-intelligence runtime built from the original Nexus Scraper vision. It provides a durable Redis-backed job plane, a unified Playwright/Puppeteer execution interface, headed and headless browser modes, bounded extraction, artifacts, replayable job state, WebSocket-ready events, Prometheus metrics, and explicit security policy enforcement.
 
 ## What is implemented
@@ -52,6 +54,11 @@ docker compose up --build
 | GET | `/v1/jobs/:id/artifacts/:name` | Serve an artifact by safe basename |
 | GET | `/health` | Liveness check |
 | GET | `/metrics` | Prometheus metrics |
+| GET | `/aria` | ARIA founder operating system shell |
+| GET | `/v1/aria/jobs` | Live tenant-scoped Nexus jobs |
+| GET | `/v1/aria/activity` | Live tenant activity |
+| GET/POST | `/v1/aria/briefs` | Persist founder briefs |
+| GET | `/v1/aria/capabilities` | Capability and integration boundary map |
 
 Every API endpoint except `/health` and `/metrics` requires `Authorization: Bearer <API key>`.
 
